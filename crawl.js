@@ -36,7 +36,29 @@ function getURLsFromHTML(htmlBody, baseUrl) {
     return result
 }
 
+
+async function crawlPage(url) {
+    console.log(`Crawling ${url}...`);
+    try {
+        const response = await fetch(url); // NOTE: should make this as input for testing status and content-type handling
+        if (response.status >= 400 || response.status < 200) {
+            console.error(`Error for ${url}: ${response.status}`);
+            return;
+        }
+        if (!response.headers.get("content-type").includes("text/html")) {
+            console.error(`Error for ${url}: not HTML, but ${response.headers.get("content-type")}`);
+            return;
+        }
+        const page = await response.text();
+        console.log(page);
+    } catch (e) {
+        console.error(`Error in crawlPage for ${url}: ${e.message}`);
+    }
+    
+}
+
 module.exports = {
     normalizeUrl,
-    getURLsFromHTML
+    getURLsFromHTML,
+    crawlPage
 }

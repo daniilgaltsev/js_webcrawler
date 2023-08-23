@@ -1,3 +1,6 @@
+const {crawlPage} = require("./crawl.js");
+
+
 function main() {
   const argl = process.argv.length;
   if (argl < 3) {
@@ -11,6 +14,8 @@ function main() {
 
   const baseUrl = process.argv[2];
   console.log(`Starting crawling from '${baseUrl}'...`);
+
+  crawlPage(baseUrl);
 }
 
 main();
