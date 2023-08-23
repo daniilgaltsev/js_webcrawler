@@ -54,18 +54,12 @@ test("getURLsFromHTML one link", () => {
 
 test("getURLsFromHTML one relative link", () => {
     expect(
-        getURLsFromHTML("<html><body><a href='/abcd'></a></body></html>", "http://host/path")
+        getURLsFromHTML("<html><body><a href='./path/abcd'></a></body></html>", "http://host/path")
     ).toEqual(["http://host/path/abcd"]);
 });
 
-test("getURLsFromHTML incorrect link", () => {
-    expect(
-        getURLsFromHTML("<html><body><a href='abcd'></a></body></html>", "http://host/path")
-    ).toEqual([]);
-});
-
-test("getURLsFromHTML one relative link and one absolute link and one incorrect link", () => {
+test("getURLsFromHTML two relative links and one absolute link", () => {
     expect(
         getURLsFromHTML("<html><body><a href='/abcd'></a><a href='http://host/path/abcd'></a><a href='abcd'></a></body></html>", "http://host/path")
-    ).toEqual(["http://host/path/abcd", "http://host/path/abcd"]);
+    ).toEqual(["http://host/abcd", "http://host/path/abcd", "http://host/abcd"]);
 });

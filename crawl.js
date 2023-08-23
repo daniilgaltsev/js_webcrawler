@@ -15,7 +15,7 @@ function getURLsFromHTML(htmlBody, baseUrl) {
 
     const dom = new JSDOM(
         htmlBody,
-        // {url: baseUrl}
+        {url: baseUrl}
     );
     const links = dom.window.document.querySelectorAll("a");
 
