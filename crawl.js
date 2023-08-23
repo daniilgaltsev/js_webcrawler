@@ -37,24 +37,59 @@ function getURLsFromHTML(htmlBody, baseUrl) {
 }
 
 
-async function crawlPage(url) {
-    console.log(`Crawling ${url}...`);
+async function crawlPage(baseUrl, currentUrl, visited) {
+    console.log(`Crawling '${currentUrl}'...`);
+
+    let normalizedCurrentUrl;
     try {
-        const response = await fetch(url); // NOTE: should make this as input for testing status and content-type handling
+        normalizedCurrentUrl = normalizeUrl(currentUrl);
+    } catch (e) {
+        console.error(`Error in normalizeUrl for ${currentUrl}: ${e.message}`);
+        return visited;
+    }
+
+
+    if (visited.has(normalizedCurrentUrl)) {
+        console.log(`Already visited ${currentUrl}`);
+        visited.set(normalizedCurrentUrl, visited.get(normalizedCurrentUrl) + 1);
+        return visited;
+    }
+
+    if (currentUrl === baseUrl) {
+        visited.set(normalizedCurrentUrl, 0);
+    } else {
+        visited.set(normalizedCurrentUrl, 1);
+    }
+
+    const baseUrlObj = new URL(baseUrl);
+    const currentUrlObj = new URL(currentUrl);
+    if (baseUrlObj.hostname !== currentUrlObj.hostname) {
+        console.log(`Not crawling ${currentUrl} because it is not on the same domain as ${baseUrl}`);
+        return visited;
+    }
+
+    try {
+        const response = await fetch(currentUrl); // NOTE: should make this as input for testing status and content-type handling
         if (response.status >= 400 || response.status < 200) {
-            console.error(`Error for ${url}: ${response.status}`);
-            return;
+            console.error(`Error for ${currentUrl}: ${response.status}`);
+            return visited;
         }
         if (!response.headers.get("content-type").includes("text/html")) {
-            console.error(`Error for ${url}: not HTML, but ${response.headers.get("content-type")}`);
-            return;
+            console.error(`Error for ${currentUrl}: not HTML, but ${response.headers.get("content-type")}`);
+            return visited;
         }
         const page = await response.text();
-        console.log(page);
+
+        const urls = getURLsFromHTML(page, baseUrl);
+        for (const url of urls) {
+            await crawlPage(baseUrl, url, visited);
+        }
+
     } catch (e) {
-        console.error(`Error in crawlPage for ${url}: ${e.message}`);
+        console.error(`Error in crawlPage for ${baseUrl}: ${e.message}`);
     }
     
+    return visited
 }
 
 module.exports = {

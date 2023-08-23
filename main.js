@@ -1,7 +1,7 @@
 const {crawlPage} = require("./crawl.js");
 
 
-function main() {
+async function main() {
   const argl = process.argv.length;
   if (argl < 3) {
     console.error("Missing argument: url");
@@ -15,7 +15,9 @@ function main() {
   const baseUrl = process.argv[2];
   console.log(`Starting crawling from '${baseUrl}'...`);
 
-  crawlPage(baseUrl);
+  let visited = new Map();
+  await crawlPage(baseUrl, baseUrl, visited);
+  console.log(visited);
 }
 
 main();
