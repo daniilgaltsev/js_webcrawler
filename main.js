@@ -1,4 +1,5 @@
 const {crawlPage} = require("./crawl.js");
+const {printReport} = require("./report.js");
 
 
 async function main() {
@@ -17,7 +18,8 @@ async function main() {
 
   let visited = new Map();
   await crawlPage(baseUrl, baseUrl, visited);
-  console.log(visited);
+  // console.log(visited);
+  printReport(visited, baseUrl);
 }
 
 main();
